@@ -3,17 +3,19 @@ import { Button } from "../../../components/button";
 import { useState } from "react";
 import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import { format } from "date-fns";
 
 interface DestinationAndDateStepProps {
   isGuestsInputOpen: boolean
   openGuestsInput: () => void
   closeGuestsInput: () => void
-
+  setDestination: (destination: string) => void
+  setEventStartAndEndDates: (eventStartAndEndDates: DateRange | undefined) => void
+  eventStartAndEndDates: DateRange | undefined
 }
 
-export function DestinationAndDateStep({ isGuestsInputOpen, openGuestsInput, closeGuestsInput }: DestinationAndDateStepProps) {
+export function DestinationAndDateStep({ isGuestsInputOpen, openGuestsInput, closeGuestsInput, setDestination, setEventStartAndEndDates, eventStartAndEndDates }: DestinationAndDateStepProps) {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
-  const [eventStartAndEndDates, setEventStartAndEndDates] = useState<DateRange | undefined>()
 
   function openDatePicker() {
     setIsDatePickerOpen(true)
@@ -22,6 +24,8 @@ export function DestinationAndDateStep({ isGuestsInputOpen, openGuestsInput, clo
   function closeDatePicker() {
     setIsDatePickerOpen(false)
   }
+
+  const displayedDate = eventStartAndEndDates && eventStartAndEndDates.from && eventStartAndEndDates.to && format(eventStartAndEndDates.from, "d ' de ' LLL").concat(' até ').concat(format(eventStartAndEndDates.to, "d ' de ' LLL"))
   
   return (
     <div className="h-16 bg-zinc-900 px-4 rounded-xl flex items-center shadow-shape gap-3">
@@ -32,19 +36,20 @@ export function DestinationAndDateStep({ isGuestsInputOpen, openGuestsInput, clo
           placeholder="Para onde você vai?"
           className="bg-transparent text-lg placeholder-zinc-400 outline-none flex-1"
           disabled={isGuestsInputOpen}
+          onChange={(event) => setDestination(event.target.value)}
         />
       </div>
 
       <button
-        className="flex items-center gap-2 text-left"
+        className="flex items-center gap-2 text-left w-[240px]"
         disabled={isGuestsInputOpen}
         onClick={openDatePicker}
       >
         <Calendar className="size-5 text-zinc-400" />
         <span
-          className="text-lg text-zinc-400 w-40"
+          className="text-lg text-zinc-400 w-40 flex-1"
         >
-          Quando?
+          {displayedDate || 'Quando?'}
         </span>
       </button>
 
